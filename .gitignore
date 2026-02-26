@@ -1,0 +1,5 @@
+.serena
+docker-data/
+__pycache__/
+*.pyc
+AGENTS.MD

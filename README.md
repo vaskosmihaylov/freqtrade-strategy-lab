@@ -1,0 +1,85 @@
+# Strategy Collection
+
+```
+⚠️ Risk Disclaimer:
+The strategies and content in this repository are provided for educational and reference purposes only. Using these strategies in live trading involves significant financial risk. Market conditions may change due to unforeseen factors, and past performance based on backtesting does not guarantee future results. Please ensure you fully understand the associated risks and seek professional advice if necessary. By using this repository, you acknowledge that you are solely responsible for any financial outcomes.
+```
+
+This repository contains a collection of strategies that I have created, tested, and optimized. It includes:
+
+- Strategies that I have personally developed.
+- Strategies that I have backtested.
+- Optimized parameters for specific strategies.
+
+Each folder within the repository corresponds to an individual strategy. It contains:
+
+- The source code for the strategy.
+- The configuration file for the strategy.
+- The backtesting results for the strategy.
+
+Feel free to explore and use these strategies as a reference or starting point for your own trading systems!
+
+## Docker setup
+
+This repository now includes a single `docker-compose.yml` for all three requested strategies:
+
+- `lstm` (FreqAI + custom `PyTorchLSTMRegressor`)
+- `transformer` (FreqAI + `PyTorchTransformerRegressor`)
+- `e0v1e` (standard strategy)
+
+Why one compose file:
+- one shared image build
+- less duplication and simpler maintenance
+- isolated runtime data per strategy under `docker-data/<strategy>`
+
+### Build image
+
+```sh
+docker compose build
+```
+
+### Run default backtests
+
+```sh
+docker compose run --rm lstm
+docker compose run --rm transformer
+docker compose run --rm e0v1e
+```
+
+### WSL2 + NVIDIA GPU notes
+
+For your Windows + WSL2 Ubuntu setup (RTX 4080 Super), ensure:
+
+1. Latest NVIDIA Windows driver is installed (WSL CUDA support enabled).
+2. Docker Desktop has WSL integration enabled for your Ubuntu distro.
+3. NVIDIA Container Toolkit is available to Docker in WSL.
+
+Quick check:
+
+```sh
+docker run --rm --gpus all nvidia/cuda:12.3.2-base-ubuntu22.04 nvidia-smi
+```
+
+`lstm` and `transformer` services are configured to request GPU devices.
+
+### Override with a custom command
+
+Example (`E0V1E` hyperopt):
+
+```sh
+docker compose run --rm e0v1e hyperopt --hyperopt-loss SharpeHyperOptLossDaily --spaces buy --strategy E0V1E --config /freqtrade/workspace/E0V1E/config.json -e 1500 -j 2 --analyze-per-epoch --strategy-path /freqtrade/workspace/E0V1E
+```
+
+## Upload to GitHub
+
+This repository already has `origin` set to:
+
+`git@github.com:14790897/my-strategies.git`
+
+Push your changes:
+
+```sh
+git add Dockerfile docker-compose.yml .dockerignore .gitignore README.md LSTM/PyTorchLSTMRegressor.py
+git commit -m "Add Docker setup for TRANSFORMER/LSTM/E0V1E with FreqAI support"
+git push origin master
+```

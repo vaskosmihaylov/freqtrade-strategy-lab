@@ -1,0 +1,5 @@
+.git
+.serena
+docker-data
+__pycache__
+*.pyc

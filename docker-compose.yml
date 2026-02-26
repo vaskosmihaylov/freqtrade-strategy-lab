@@ -1,0 +1,89 @@
+services:
+  lstm:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: my-strategies-freqtrade:latest
+    container_name: freqtrade-lstm
+    working_dir: /freqtrade
+    tty: true
+    stdin_open: true
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    volumes:
+      - ./docker-data/lstm:/freqtrade/user_data
+      - ./:/freqtrade/workspace:ro
+    command:
+      [
+        "backtesting",
+        "--config",
+        "/freqtrade/workspace/LSTM/config_freqai.json",
+        "--strategy",
+        "AlexStrategyFinalV9",
+        "--strategy-path",
+        "/freqtrade/workspace/LSTM",
+        "--freqaimodel",
+        "PyTorchLSTMRegressor",
+        "--freqaimodel-path",
+        "/freqtrade/custom/freqaimodels"
+      ]
+
+  transformer:
+    image: my-strategies-freqtrade:latest
+    container_name: freqtrade-transformer
+    working_dir: /freqtrade
+    tty: true
+    stdin_open: true
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    volumes:
+      - ./docker-data/transformer:/freqtrade/user_data
+      - ./:/freqtrade/workspace:ro
+    command:
+      [
+        "backtesting",
+        "--config",
+        "/freqtrade/workspace/TRANSFORMER/config_freqai.json",
+        "--strategy",
+        "AlexStrategyFinalV9",
+        "--strategy-path",
+        "/freqtrade/workspace/TRANSFORMER",
+        "--freqaimodel",
+        "PyTorchTransformerRegressor"
+      ]
+
+  e0v1e:
+    image: my-strategies-freqtrade:latest
+    container_name: freqtrade-e0v1e
+    working_dir: /freqtrade
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./docker-data/e0v1e:/freqtrade/user_data
+      - ./:/freqtrade/workspace:ro
+    command:
+      [
+        "backtesting",
+        "--config",
+        "/freqtrade/workspace/E0V1E/config.json",
+        "--strategy",
+        "E0V1E",
+        "--strategy-path",
+        "/freqtrade/workspace/E0V1E"
+      ]
