@@ -46,6 +46,39 @@ docker compose run --rm transformer
 docker compose run --rm e0v1e
 ```
 
+### First run: download market data (required)
+
+`lstm` and `transformer` use Bybit **futures** pairs (for example `BTC/USDT:USDT`).
+Before running backtests, download candles into the mounted `user_data` volume.
+
+Transformer:
+
+```sh
+docker compose run --rm transformer download-data \
+  --config /freqtrade/workspace/TRANSFORMER/config_freqai.json \
+  --trading-mode futures \
+  --timeframes 1h 2h 4h \
+  --timerange 20230101-20241230
+```
+
+LSTM:
+
+```sh
+docker compose run --rm lstm download-data \
+  --config /freqtrade/workspace/LSTM/config_freqai.json \
+  --trading-mode futures \
+  --timeframes 1h 2h 4h \
+  --timerange 20230101-20241230
+```
+
+Optional verification:
+
+```sh
+docker compose run --rm transformer list-data \
+  --config /freqtrade/workspace/TRANSFORMER/config_freqai.json \
+  --show-timerange
+```
+
 ### WSL2 + NVIDIA GPU notes
 
 For your Windows + WSL2 Ubuntu setup (RTX 4080 Super), ensure:
@@ -53,6 +86,7 @@ For your Windows + WSL2 Ubuntu setup (RTX 4080 Super), ensure:
 1. Latest NVIDIA Windows driver is installed (WSL CUDA support enabled).
 2. Docker Desktop has WSL integration enabled for your Ubuntu distro.
 3. NVIDIA Container Toolkit is available to Docker in WSL.
+4. Keep this repo on the WSL filesystem (for example `~/freqtrade-strategy-lab`), not under `/mnt/c/...`, to avoid bind-mount and I/O issues.
 
 Quick check:
 
@@ -61,6 +95,14 @@ docker run --rm --gpus all nvidia/cuda:12.3.2-base-ubuntu22.04 nvidia-smi
 ```
 
 `lstm` and `transformer` services are configured to request GPU devices.
+
+### Troubleshooting `No data found. Terminating.`
+
+If logs show warnings like:
+- `No history for BTC/USDT:USDT, futures, 1h found`
+- followed by `No data found. Terminating.`
+
+then the container started correctly, but `./docker-data/<strategy>/data/bybit` does not contain the required futures candles yet (or only has spot data). Run the `download-data` command above, then run the backtest again.
 
 ### Override with a custom command
 

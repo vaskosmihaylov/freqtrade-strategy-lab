@@ -33,7 +33,7 @@
     "order_book_top": 1
   },
   "exchange": {
-    "name": "binance",
+    "name": "bybit",
     "key": "",
     "secret": "",
     "ccxt_config": {},

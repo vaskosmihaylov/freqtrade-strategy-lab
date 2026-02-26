@@ -2,6 +2,22 @@
 ```sh
 freqtrade backtesting --strategy AlexStrategyFinalV9 --config user_data/config_freqai.json --freqaimodel PyTorchTransformerRegressor --timerange 20210401-20230801
 ```
+
+## docker first run (required)
+```sh
+docker compose run --rm transformer download-data \
+  --config /freqtrade/workspace/TRANSFORMER/config_freqai.json \
+  --trading-mode futures \
+  --timeframes 1h 2h 4h \
+  --timerange 20230101-20241230
+```
+
+Then run:
+```sh
+docker compose run --rm transformer
+```
+
+If you see `No history for ... futures, 1h found` and `No data found. Terminating.`, it means data has not been downloaded into `docker-data/transformer/data/bybit` yet.
 ## result
 ```
 Result for strategy AlexStrategyFinalV9
