@@ -46,29 +46,64 @@ docker compose run --rm transformer
 docker compose run --rm e0v1e
 ```
 
-### First run: download market data (required)
-
-`lstm` and `transformer` use Bybit **futures** pairs (for example `BTC/USDT:USDT`).
-Before running backtests, download candles into the mounted `user_data` volume.
+### Run in dry-run (paper trading)
 
 Transformer:
 
 ```sh
-docker compose run --rm transformer download-data \
+docker compose run --rm transformer trade \
   --config /freqtrade/workspace/TRANSFORMER/config_freqai.json \
-  --trading-mode futures \
-  --timeframes 1h 2h 4h \
-  --timerange 20230101-20241230
+  --strategy-path /freqtrade/workspace/TRANSFORMER \
+  --freqaimodel PyTorchTransformerRegressor
 ```
 
 LSTM:
 
 ```sh
+docker compose run --rm lstm trade \
+  --config /freqtrade/workspace/LSTM/config_freqai.json \
+  --strategy-path /freqtrade/workspace/LSTM \
+  --freqaimodel PyTorchLSTMRegressor \
+  --freqaimodel-path /freqtrade/custom/freqaimodels
+```
+
+E0V1E:
+
+```sh
+docker compose run --rm e0v1e trade \
+  --config /freqtrade/workspace/E0V1E/config.json \
+  --strategy E0V1E \
+  --strategy-path /freqtrade/workspace/E0V1E
+```
+
+### First run: download market data (required)
+
+`lstm` and `transformer` use Bybit **futures** pairs (for example `BTC/USDT:USDT`).
+Before backtests or dry-run, download candles into the mounted `user_data` volume.
+As of **February 26, 2026**, start from `20250101` so you include all of 2025 plus current 2026 data.
+
+Transformer:
+
+```sh
+START=20250101
+END=$(date +%Y%m%d)  # e.g. 20260226
+docker compose run --rm transformer download-data \
+  --config /freqtrade/workspace/TRANSFORMER/config_freqai.json \
+  --trading-mode futures \
+  --timeframes 1h 2h 4h \
+  --timerange ${START}-${END}
+```
+
+LSTM:
+
+```sh
+START=20250101
+END=$(date +%Y%m%d)  # e.g. 20260226
 docker compose run --rm lstm download-data \
   --config /freqtrade/workspace/LSTM/config_freqai.json \
   --trading-mode futures \
   --timeframes 1h 2h 4h \
-  --timerange 20230101-20241230
+  --timerange ${START}-${END}
 ```
 
 Optional verification:
@@ -102,7 +137,7 @@ If logs show warnings like:
 - `No history for BTC/USDT:USDT, futures, 1h found`
 - followed by `No data found. Terminating.`
 
-then the container started correctly, but `./docker-data/<strategy>/data/bybit` does not contain the required futures candles yet (or only has spot data). Run the `download-data` command above, then run the backtest again.
+then the container started correctly, but `./docker-data/<strategy>/data/bybit` does not contain the required futures candles yet (or only has spot data). Run the `download-data` command above, then run your `backtesting` or `trade` command again.
 
 ### Override with a custom command
 
@@ -110,18 +145,4 @@ Example (`E0V1E` hyperopt):
 
 ```sh
 docker compose run --rm e0v1e hyperopt --hyperopt-loss SharpeHyperOptLossDaily --spaces buy --strategy E0V1E --config /freqtrade/workspace/E0V1E/config.json -e 1500 -j 2 --analyze-per-epoch --strategy-path /freqtrade/workspace/E0V1E
-```
-
-## Upload to GitHub
-
-This repository already has `origin` set to:
-
-`git@github.com:14790897/my-strategies.git`
-
-Push your changes:
-
-```sh
-git add Dockerfile docker-compose.yml .dockerignore .gitignore README.md LSTM/PyTorchLSTMRegressor.py
-git commit -m "Add Docker setup for TRANSFORMER/LSTM/E0V1E with FreqAI support"
-git push origin master
 ```
