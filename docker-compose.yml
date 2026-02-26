@@ -11,6 +11,7 @@ services:
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1
     deploy:
       resources:
         reservations:
@@ -46,6 +47,7 @@ services:
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1
     deploy:
       resources:
         reservations:

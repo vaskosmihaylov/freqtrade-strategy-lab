@@ -3,7 +3,7 @@
   "margin_mode": "isolated",
   "max_open_trades": -1,
   "stake_currency": "USDT",
-  "stake_amount": 2000,
+  "stake_amount": "unlimited",
   "tradable_balance_ratio": 0.99,
   "fiat_display_currency": "USD",
   "dry_run": true,
@@ -15,7 +15,7 @@
     "../configs/blacklist-bybit.json"
   ],
   "cancel_open_orders_on_exit": false,
-  "dry_run_wallet": 8000,
+  "dry_run_wallet": 10000,
   "unfilledtimeout": {
     "entry": 10,
     "exit": 30

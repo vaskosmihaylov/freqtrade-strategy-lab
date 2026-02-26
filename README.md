@@ -93,29 +93,46 @@ Transformer:
 
 ```sh
 START=20250101
-END=$(date +%Y%m%d)  # e.g. 20260226
+END=$(date -d "+1 day" +%Y%m%d)  # if today is 2026-02-26 -> 20260227
 docker compose run --rm transformer download-data \
   --config /freqtrade/workspace/TRANSFORMER/config_freqai.json \
   --trading-mode futures \
   --timeframes 1h 2h 4h \
-  --timerange ${START}-${END}
+  --timerange ${START}-${END} \
+  --prepend
 ```
 
 LSTM:
 
 ```sh
 START=20250101
-END=$(date +%Y%m%d)  # e.g. 20260226
+END=$(date -d "+1 day" +%Y%m%d)  # if today is 2026-02-26 -> 20260227
 docker compose run --rm lstm download-data \
   --config /freqtrade/workspace/LSTM/config_freqai.json \
   --trading-mode futures \
   --timeframes 1h 2h 4h \
-  --timerange ${START}-${END}
+  --timerange ${START}-${END} \
+  --prepend
 ```
 
 Notes:
 - With volume pairlists, `download-data` can fetch many pairs and may take significantly longer.
 - Pair composition can change over time as Bybit volumes change.
+- `--prepend` is important when files already exist and you want to backfill older candles.
+
+Download a broader static Bybit futures universe (recommended once for initial FreqAI bootstrap):
+
+```sh
+START=20250101
+END=$(date -d "+1 day" +%Y%m%d)
+docker compose run --rm transformer download-data \
+  --config /freqtrade/workspace/TRANSFORMER/config_freqai.json \
+  --config /freqtrade/workspace/configs/pairlist-static-bybit-futures-usdt.json \
+  --trading-mode futures \
+  --timeframes 1h 2h 4h \
+  --timerange ${START}-${END} \
+  --prepend
+```
 
 Optional verification:
 
@@ -151,6 +168,8 @@ If logs show warnings like:
 then the container started correctly, but `./docker-data/<strategy>/data/bybit` does not contain the required futures candles yet (or only has spot data). Run the `download-data` command above, then run your `backtesting` or `trade` command again.
 
 If you start `trade` and UI shows bot state `STOPPED`, this is a start-state issue (not a data issue). Start the bot from UI or set `"initial_state": "running"` in the strategy config.
+
+If you see PyTorch `weights_only`/`UnpicklingError` warnings when FreqAI loads old checkpoints, this repo sets `TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1` for `lstm`/`transformer` services in `docker-compose.yml`. If warnings persist, remove stale model artifacts under `docker-data/<strategy>/models` and let FreqAI retrain.
 
 ### Override with a custom command
 

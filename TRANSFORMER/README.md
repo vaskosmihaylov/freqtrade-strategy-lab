@@ -6,15 +6,21 @@ freqtrade backtesting --strategy AlexStrategyFinalV9 --config user_data/config_f
 ## docker first run (required)
 ```sh
 START=20250101
-END=$(date +%Y%m%d)  # e.g. 20260226
+END=$(date -d "+1 day" +%Y%m%d)  # if today is 2026-02-26 -> 20260227
 docker compose run --rm transformer download-data \
   --config /freqtrade/workspace/TRANSFORMER/config_freqai.json \
   --trading-mode futures \
   --timeframes 1h 2h 4h \
-  --timerange ${START}-${END}
+  --timerange ${START}-${END} \
+  --prepend
 ```
 
 This config loads dynamic pair overlays from `../configs/` (volume pairlist + blacklist), so the pair universe is no longer fixed to only 10 static pairs.
+
+For an initial broader bootstrap, add:
+```sh
+  --config /freqtrade/workspace/configs/pairlist-static-bybit-futures-usdt.json
+```
 
 Then run:
 ```sh
@@ -31,6 +37,7 @@ docker compose run --rm transformer trade \
 
 If you see `No history for ... futures, 1h found` and `No data found. Terminating.`, it means data has not been downloaded into `docker-data/transformer/data/bybit` yet.
 If bot state is `STOPPED` in UI after `trade`, click start in UI (or set `"initial_state": "running"` in config).
+If you see PyTorch `weights_only` warnings while loading checkpoints, remove old artifacts in `docker-data/transformer/models` and restart so FreqAI retrains cleanly.
 ## result
 ```
 Result for strategy AlexStrategyFinalV9
