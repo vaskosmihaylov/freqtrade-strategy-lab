@@ -14,6 +14,8 @@ docker compose run --rm transformer download-data \
   --timerange ${START}-${END}
 ```
 
+This config loads dynamic pair overlays from `../configs/` (volume pairlist + blacklist), so the pair universe is no longer fixed to only 10 static pairs.
+
 Then run:
 ```sh
 docker compose run --rm transformer
@@ -28,6 +30,7 @@ docker compose run --rm transformer trade \
 ```
 
 If you see `No history for ... futures, 1h found` and `No data found. Terminating.`, it means data has not been downloaded into `docker-data/transformer/data/bybit` yet.
+If bot state is `STOPPED` in UI after `trade`, click start in UI (or set `"initial_state": "running"` in config).
 ## result
 ```
 Result for strategy AlexStrategyFinalV9

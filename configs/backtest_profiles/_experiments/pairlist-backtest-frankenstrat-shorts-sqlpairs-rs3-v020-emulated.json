@@ -1,0 +1,12 @@
+{
+  "stake_currency": "USDT",
+  "exchange": {
+    "name": "bybit",
+    "pair_whitelist": []
+  },
+  "pairlists": [
+    {
+      "method": "StaticPairList"
+    }
+  ]
+}

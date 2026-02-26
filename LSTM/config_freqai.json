@@ -9,6 +9,11 @@
   "dry_run": true,
   "strategy": "AlexStrategyFinalV9",
   "freqaimodel": "PyTorchLSTMRegressor",
+  "add_config_files": [
+    "../configs/trading_mode-futures.json",
+    "../configs/pairlist-volume-bybit-usdt.json",
+    "../configs/blacklist-bybit.json"
+  ],
   "cancel_open_orders_on_exit": false,
   "dry_run_wallet": 8000,
   "unfilledtimeout": {
@@ -43,31 +48,8 @@
     "ccxt_async_config": {
       "enableRateLimit": true,
       "rateLimit": 50
-    },
-    "pair_whitelist": [
-      "BTC/USDT:USDT",
-      "ETH/USDT:USDT",
-      "LTC/USDT:USDT",
-      "BNB/USDT:USDT",
-      "XRP/USDT:USDT",
-      "ADA/USDT:USDT",
-      "DOT/USDT:USDT",
-      "SOL/USDT:USDT",
-      "LINK/USDT:USDT",
-      "AVAX/USDT:USDT"
-    ],
-    "pair_blacklist": []
-  },
-  "pairlists": [
-    {
-      "method": "StaticPairList"
-    },
-    {
-      "method": "ShuffleFilter",
-      "shuffle_frequency": "candle",
-      "seed": 42
     }
-  ],
+  },
   "api_server": {
     "enabled": true,
     "listen_ip_address": "0.0.0.0",

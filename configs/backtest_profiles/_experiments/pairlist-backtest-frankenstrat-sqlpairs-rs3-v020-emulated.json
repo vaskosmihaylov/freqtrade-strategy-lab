@@ -1,0 +1,19 @@
+{
+  "stake_currency": "USDT",
+  "exchange": {
+    "name": "bybit",
+    "pair_whitelist": [
+      "BCH/USDT:USDT",
+      "HBAR/USDT:USDT",
+      "ICP/USDT:USDT",
+      "LPT/USDT:USDT",
+      "PAXG/USDT:USDT",
+      "TON/USDT:USDT"
+    ]
+  },
+  "pairlists": [
+    {
+      "method": "StaticPairList"
+    }
+  ]
+}

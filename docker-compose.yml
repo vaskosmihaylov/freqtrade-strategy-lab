@@ -30,6 +30,7 @@ services:
         "AlexStrategyFinalV9",
         "--strategy-path",
         "/freqtrade/workspace/LSTM",
+        "--enable-dynamic-pairlist",
         "--freqaimodel",
         "PyTorchLSTMRegressor",
         "--freqaimodel-path",
@@ -64,6 +65,7 @@ services:
         "AlexStrategyFinalV9",
         "--strategy-path",
         "/freqtrade/workspace/TRANSFORMER",
+        "--enable-dynamic-pairlist",
         "--freqaimodel",
         "PyTorchTransformerRegressor"
       ]

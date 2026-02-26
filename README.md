@@ -32,6 +32,13 @@ Why one compose file:
 - less duplication and simpler maintenance
 - isolated runtime data per strategy under `docker-data/<strategy>`
 
+`lstm` and `transformer` now load additional config overlays via `add_config_files`:
+- `configs/trading_mode-futures.json`
+- `configs/pairlist-volume-bybit-usdt.json`
+- `configs/blacklist-bybit.json`
+
+This switches pair selection from a fixed 10-pair static list to a dynamic Bybit volume-filtered universe.
+
 ### Build image
 
 ```sh
@@ -106,6 +113,10 @@ docker compose run --rm lstm download-data \
   --timerange ${START}-${END}
 ```
 
+Notes:
+- With volume pairlists, `download-data` can fetch many pairs and may take significantly longer.
+- Pair composition can change over time as Bybit volumes change.
+
 Optional verification:
 
 ```sh
@@ -138,6 +149,8 @@ If logs show warnings like:
 - followed by `No data found. Terminating.`
 
 then the container started correctly, but `./docker-data/<strategy>/data/bybit` does not contain the required futures candles yet (or only has spot data). Run the `download-data` command above, then run your `backtesting` or `trade` command again.
+
+If you start `trade` and UI shows bot state `STOPPED`, this is a start-state issue (not a data issue). Start the bot from UI or set `"initial_state": "running"` in the strategy config.
 
 ### Override with a custom command
 
