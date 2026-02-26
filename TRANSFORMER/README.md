@@ -29,10 +29,18 @@ docker compose run --rm transformer
 
 Dry-run (paper trading):
 ```sh
-docker compose run --rm transformer trade \
+docker compose run -d --name transformer-dryrun \
+  -p 127.0.0.1:8080:8080 \
+  transformer trade \
   --config /freqtrade/workspace/TRANSFORMER/config_freqai.json \
   --strategy-path /freqtrade/workspace/TRANSFORMER \
   --freqaimodel PyTorchTransformerRegressor
+```
+
+Check status/logs:
+```sh
+docker logs -f transformer-dryrun
+docker rm -f transformer-dryrun
 ```
 
 If you see `No history for ... futures, 1h found` and `No data found. Terminating.`, it means data has not been downloaded into `docker-data/transformer/data/bybit` yet.

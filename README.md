@@ -58,7 +58,9 @@ docker compose run --rm e0v1e
 Transformer:
 
 ```sh
-docker compose run --rm transformer trade \
+docker compose run -d --name transformer-dryrun \
+  -p 127.0.0.1:8080:8080 \
+  transformer trade \
   --config /freqtrade/workspace/TRANSFORMER/config_freqai.json \
   --strategy-path /freqtrade/workspace/TRANSFORMER \
   --freqaimodel PyTorchTransformerRegressor
@@ -81,6 +83,14 @@ docker compose run --rm e0v1e trade \
   --config /freqtrade/workspace/E0V1E/config.json \
   --strategy E0V1E \
   --strategy-path /freqtrade/workspace/E0V1E
+```
+
+Useful lifecycle commands:
+
+```sh
+docker logs -f transformer-dryrun
+docker rm -f transformer-dryrun
+docker compose run --remove-orphans --rm transformer list-data --config /freqtrade/workspace/TRANSFORMER/config_freqai.json --show-timerange
 ```
 
 ### First run: download market data (required)
