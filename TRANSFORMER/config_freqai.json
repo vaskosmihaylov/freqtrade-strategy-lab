@@ -12,7 +12,7 @@
   "freqaimodel": "PyTorchTransformerRegressor",
   "add_config_files": [
     "../configs/trading_mode-futures.json",
-    "../configs/pairlist-volume-bybit-usdt.json",
+    "../configs/pairlist-static-bybit-futures-usdt.json",
     "../configs/blacklist-bybit.json"
   ],
   "cancel_open_orders_on_exit": false,

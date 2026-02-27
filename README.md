@@ -38,6 +38,7 @@ Why one compose file:
 - `configs/blacklist-bybit.json`
 
 This switches pair selection from a fixed 10-pair static list to a dynamic Bybit volume-filtered universe.
+For FreqAI (`train_period_days: 120`), keep `AgeFilter.min_days_listed` above the training window (set to 150) to avoid too-new pairs with insufficient history.
 
 ### Build image
 
