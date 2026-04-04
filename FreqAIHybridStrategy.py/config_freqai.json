@@ -1,15 +1,15 @@
 {
   "trading_mode": "futures",
   "margin_mode": "isolated",
-  "max_open_trades": -1,
+  "max_open_trades": 6,
   "stake_currency": "USDT",
   "stake_amount": "unlimited",
   "tradable_balance_ratio": 0.99,
   "fiat_display_currency": "USD",
   "dry_run": true,
   "initial_state": "running",
-  "strategy": "AlexStrategyFinalV9",
-  "freqaimodel": "PyTorchLSTMRegressor",
+  "strategy": "FreqAIHybridStrategy",
+  "freqaimodel": "LightGBMRegressorMultiTarget",
   "add_config_files": [
     "../configs/trading_mode-futures.json",
     "../configs/pairlist-static-bybit-futures-usdt.json",
@@ -21,7 +21,8 @@
     "entry": 10,
     "exit": 30
   },
-  "timerange": "20240101-20241230",
+  "timeframe": "5m",
+  "timerange": "20250101-20260331",
   "entry_pricing": {
     "price_side": "same",
     "use_order_book": true,
@@ -65,35 +66,37 @@
   },
   "freqai": {
     "enabled": true,
-    "identifier": "torch-lstm12",
-    "train_period_days": 120,
-    "fit_live_predictions_candles": 24,
-    "backtest_period_days": 30,
-    "expiration_hours": 4,
-    "live_retrain_hours": 4,
+    "identifier": "freqaihybrid-bybit",
+    "train_period_days": 90,
+    "fit_live_predictions_candles": 48,
+    "backtest_period_days": 21,
+    "expiration_hours": 6,
+    "live_retrain_hours": 6,
     "purge_old_models": 2,
     "save_backtest_models": true,
     "write_metrics_to_disk": true,
-    "activate_tensorboard": true,
+    "activate_tensorboard": false,
     "feature_parameters": {
       "include_corr_pairlist": [
         "BTC/USDT:USDT",
         "ETH/USDT:USDT"
       ],
       "include_timeframes": [
-        "2h",
+        "15m",
+        "1h",
         "4h"
       ],
-      "label_period_candles": 12,
-      "include_shifted_candles": 12,
+      "label_period_candles": 24,
+      "include_shifted_candles": 3,
       "DI_threshold": 10,
       "weight_factor": 0.5,
       "indicator_periods_candles": [
         10,
-        20
+        20,
+        50
       ],
       "noise_standard_deviation": 0.01,
-      "buffer_train_data_candles": 20
+      "buffer_train_data_candles": 30
     },
     "data_split_parameters": {
       "test_size": 0.2,
@@ -101,18 +104,11 @@
       "shuffle": false
     },
     "model_training_parameters": {
-      "learning_rate": 3e-3,
-      "trainer_kwargs": {
-        "n_steps": null,
-        "batch_size": 32,
-        "n_epochs": 10
-      },
-      "model_kwargs": {
-        "num_lstm_layers": 3,
-        "hidden_dim": 128,
-        "dropout_percent": 0.4,
-        "window_size": 5
-      }
+      "n_estimators": 400,
+      "learning_rate": 0.03,
+      "num_leaves": 63,
+      "subsample": 0.9,
+      "colsample_bytree": 0.9
     }
   }
 }

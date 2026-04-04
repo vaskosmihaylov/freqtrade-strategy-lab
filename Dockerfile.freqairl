@@ -1,0 +1,3 @@
+FROM freqtradeorg/freqtrade:stable_freqairl
+
+USER ftuser

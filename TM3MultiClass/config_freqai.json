@@ -1,0 +1,170 @@
+{
+  "trading_mode": "futures",
+  "margin_mode": "isolated",
+  "max_open_trades": 1,
+  "stake_currency": "USDT",
+  "stake_amount": "unlimited",
+  "tradable_balance_ratio": 1,
+  "fiat_display_currency": "USD",
+  "dry_run": true,
+  "timeframe": "15m",
+  "dry_run_wallet": 1000,
+  "amend_last_stake_amount": true,
+  "cancel_open_orders_on_exit": true,
+  "strategy": "TM3MultiClass",
+  "freqaimodel": "CatboostFeatureSelectedMultiTargetClassifierV1",
+  "exchange": {
+    "name": "binance",
+    "key": "",
+    "secret": "",
+    "ccxt_config": {
+      "enableRateLimit": true,
+      "defaultType": "futures"
+    },
+    "ccxt_async_config": {
+      "enableRateLimit": true,
+      "rateLimit": 200
+    },
+    "pair_whitelist": [
+      "ADA/USDT:USDT"
+    ],
+    "pair_blacklist": []
+  },
+  "order_types": {
+    "entry": "limit",
+    "exit": "limit",
+    "emergency_exit": "market",
+    "force_exit": "market",
+    "force_entry": "market",
+    "stoploss": "market",
+    "stoploss_on_exchange": true,
+    "stoploss_on_exchange_interval": 60,
+    "stoploss_on_exchange_limit_ratio": 0.99
+  },
+  "entry_pricing": {
+    "price_side": "same",
+    "use_order_book": true,
+    "order_book_top": 1
+  },
+  "exit_pricing": {
+    "price_side": "other",
+    "use_order_book": true,
+    "order_book_top": 1
+  },
+  "unfilledtimeout": {
+    "entry": 3,
+    "exit": 3
+  },
+  "pairlists": [
+    {
+      "method": "StaticPairList"
+    }
+  ],
+  "sagemaster": {
+    "debug": false,
+    "enabled": false,
+    "webhook_url": "",
+    "webhook_api_key": "",
+    "glassnode_api_key": "",
+    "trader_nickname": "TM3MC",
+    "CATBOOST_SELECT_FEATURES_ITERATIONS": 500,
+    "CATBOOST_NUM_FEATURES_TO_SELECT": 2880,
+    "CATBOOST_SELECT_FEATURES_STEPS": 10,
+    "CATBOOST_AUTODETECT_NUM_FEATURES_TO_SELECT": false
+  },
+  "freqai": {
+    "enabled": true,
+    "purge_old_models": true,
+    "train_period_days": 30,
+    "backtest_period_days": 3,
+    "live_retrain_hours": 24,
+    "expiration_hours": 48,
+    "save_backtest_models": true,
+    "fit_live_predictions_candles": 24,
+    "conv_width": 1,
+    "write_metrics_to_disk": true,
+    "data_kitchen_thread_count": 8,
+    "label_period_candles": 12,
+    "track_performance": false,
+    "extra_returns_per_train": {
+      "DI_value_param1": 0,
+      "DI_value_param2": 0,
+      "DI_value_param3": 0,
+      "DI_cutoff": 2,
+      "roc_auc_long_6": 0,
+      "roc_auc_long_gini_6": 0,
+      "roc_auc_short_6": 0,
+      "roc_auc_short_gini_6": 0,
+      "roc_auc_long_12": 0,
+      "roc_auc_long_gini_12": 0,
+      "roc_auc_short_12": 0,
+      "roc_auc_short_gini_12": 0,
+      "roc_auc_long_24": 0,
+      "roc_auc_long_gini_24": 0,
+      "roc_auc_short_24": 0,
+      "roc_auc_short_gini_24": 0,
+      "f1_long_12": 0,
+      "f1_short_12": 0,
+      "f1_long_24": 0,
+      "f1_short_24": 0,
+      "accuracy_long_6": 0,
+      "accuracy_short_6": 0,
+      "accuracy_long_12": 0,
+      "accuracy_short_12": 0,
+      "accuracy_long_24": 0,
+      "accuracy_short_24": 0
+    },
+    "identifier": "TM3MC_20260404",
+    "feature_parameters": {
+      "include_timeframes": [
+        "1h",
+        "4h"
+      ],
+      "include_corr_pairlist": [],
+      "include_shifted_candles": 0,
+      "DI_threshold": 0,
+      "weight_factor": 1,
+      "principal_component_analysis": false,
+      "use_SVM_to_remove_outliers": false,
+      "use_DBSCAN_to_remove_outliers": false,
+      "indicator_periods_candles": [
+        1
+      ],
+      "inlier_metric_window": 0,
+      "noise_standard_deviation": 0,
+      "reverse_test_train_order": false,
+      "plot_feature_importances": 0
+    },
+    "data_split_parameters": {
+      "test_size": 0.06
+    },
+    "model_training_parameters": {
+      "auto_class_weights": "Balanced",
+      "eval_metric": "TotalF1",
+      "custom_metric": "PRAUC:type=OneVsAll",
+      "objective": "MultiClassOneVsAll",
+      "n_estimators": 1000,
+      "task_type": "CPU",
+      "logging_level": "Verbose",
+      "thread_count": 8,
+      "use_best_model": true
+    }
+  },
+  "bot_name": "TM3MC",
+  "force_entry_enable": true,
+  "initial_state": "running",
+  "internals": {
+    "process_throttle_secs": 5
+  },
+  "api_server": {
+    "enabled": true,
+    "listen_ip_address": "0.0.0.0",
+    "listen_port": 8080,
+    "verbosity": "error",
+    "enable_openapi": false,
+    "jwt_secret_key": "213123",
+    "CORS_origins": [],
+    "username": "freqtrader",
+    "password": "12312"
+  }
+}

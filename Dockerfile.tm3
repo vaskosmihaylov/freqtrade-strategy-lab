@@ -1,0 +1,12 @@
+FROM freqtradeorg/freqtrade:stable_freqaitorch
+
+USER ftuser
+
+RUN python -m pip install --user --no-cache-dir \
+    catboost \
+    datasieve \
+    pandas-ta \
+    sdnotify \
+    plotly \
+    numba \
+    wandb

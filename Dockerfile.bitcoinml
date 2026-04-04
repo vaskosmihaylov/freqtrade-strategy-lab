@@ -1,0 +1,11 @@
+FROM freqtradeorg/freqtrade:stable_freqaitorch
+
+USER root
+
+RUN pip install --no-cache-dir \
+    hmmlearn \
+    joblib \
+    lightgbm \
+    scikit-learn
+
+USER ftuser

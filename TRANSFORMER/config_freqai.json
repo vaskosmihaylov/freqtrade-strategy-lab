@@ -85,7 +85,7 @@
         "4h"
       ],
       "label_period_candles": 12,
-      "include_shifted_candidates": 12,
+      "include_shifted_candles": 12,
       "DI_threshold": 10,
       "weight_factor": 0.5,
       "indicator_periods_candles": [

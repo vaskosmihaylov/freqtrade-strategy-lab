@@ -1,3 +1,8 @@
+x-freqtrade-service: &freqtrade-service
+  working_dir: /freqtrade
+  tty: true
+  stdin_open: true
+
 services:
   lstm:
     build:
@@ -5,20 +10,9 @@ services:
       dockerfile: Dockerfile
     image: my-strategies-freqtrade:latest
     container_name: freqtrade-lstm
-    working_dir: /freqtrade
-    tty: true
-    stdin_open: true
+    <<: *freqtrade-service
     environment:
-      - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
       - TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
     volumes:
       - ./docker-data/lstm:/freqtrade/user_data
       - ./:/freqtrade/workspace:ro
@@ -31,7 +25,6 @@ services:
         "AlexStrategyFinalV9",
         "--strategy-path",
         "/freqtrade/workspace/LSTM",
-        "--enable-dynamic-pairlist",
         "--freqaimodel",
         "PyTorchLSTMRegressor",
         "--freqaimodel-path",
@@ -39,22 +32,14 @@ services:
       ]
 
   transformer:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: my-strategies-freqtrade:latest
     container_name: freqtrade-transformer
-    working_dir: /freqtrade
-    tty: true
-    stdin_open: true
+    <<: *freqtrade-service
     environment:
-      - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
       - TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
     volumes:
       - ./docker-data/transformer:/freqtrade/user_data
       - ./:/freqtrade/workspace:ro
@@ -67,27 +52,126 @@ services:
         "AlexStrategyFinalV9",
         "--strategy-path",
         "/freqtrade/workspace/TRANSFORMER",
-        "--enable-dynamic-pairlist",
         "--freqaimodel",
         "PyTorchTransformerRegressor"
       ]
 
-  e0v1e:
-    image: my-strategies-freqtrade:latest
-    container_name: freqtrade-e0v1e
-    working_dir: /freqtrade
-    tty: true
-    stdin_open: true
+  reinforcementlearning:
+    build:
+      context: .
+      dockerfile: Dockerfile.freqairl
+    image: my-strategies-freqtrade-rl:latest
+    container_name: freqtrade-reinforcementlearning
+    <<: *freqtrade-service
     volumes:
-      - ./docker-data/e0v1e:/freqtrade/user_data
+      - ./docker-data/reinforcementlearning:/freqtrade/user_data
       - ./:/freqtrade/workspace:ro
     command:
       [
         "backtesting",
         "--config",
-        "/freqtrade/workspace/E0V1E/config.json",
+        "/freqtrade/workspace/ReinforcementLearning/config_freqai.json",
         "--strategy",
-        "E0V1E",
+        "freqai_rl_test_strat",
         "--strategy-path",
-        "/freqtrade/workspace/E0V1E"
+        "/freqtrade/workspace/ReinforcementLearning",
+        "--freqaimodel",
+        "ReinforcementLearner"
+      ]
+
+  e0v1eai:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: my-strategies-freqtrade:latest
+    container_name: freqtrade-e0v1eai
+    <<: *freqtrade-service
+    volumes:
+      - ./docker-data/e0v1eai:/freqtrade/user_data
+      - ./:/freqtrade/workspace:ro
+    command:
+      [
+        "backtesting",
+        "--config",
+        "/freqtrade/workspace/E0V1E/config_freqai.json",
+        "--strategy",
+        "E0V1EAI",
+        "--strategy-path",
+        "/freqtrade/workspace/E0V1E",
+        "--freqaimodel",
+        "LightGBMRegressorMultiTarget"
+      ]
+
+  freqaihybrid:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: my-strategies-freqtrade:latest
+    container_name: freqtrade-freqaihybrid
+    <<: *freqtrade-service
+    volumes:
+      - ./docker-data/freqaihybrid:/freqtrade/user_data
+      - ./:/freqtrade/workspace:ro
+    command:
+      [
+        "backtesting",
+        "--config",
+        "/freqtrade/workspace/FreqAIHybridStrategy.py/config_freqai.json",
+        "--strategy",
+        "FreqAIHybridStrategy",
+        "--strategy-path",
+        "/freqtrade/workspace/FreqAIHybridStrategy.py",
+        "--freqaimodel",
+        "LightGBMRegressorMultiTarget"
+      ]
+
+  bitcoinml:
+    build:
+      context: .
+      dockerfile: Dockerfile.bitcoinml
+    image: my-strategies-freqtrade-bitcoinml:latest
+    container_name: freqtrade-bitcoinml
+    <<: *freqtrade-service
+    environment:
+      - PYTHONPATH=/freqtrade/workspace/BitcoinMLStrategy
+    volumes:
+      - ./docker-data/bitcoinml:/freqtrade/user_data
+      - ./:/freqtrade/workspace:ro
+    command:
+      [
+        "backtesting",
+        "--config",
+        "/freqtrade/workspace/BitcoinMLStrategy/config.json",
+        "--strategy",
+        "BitcoinMLStrategy",
+        "--strategy-path",
+        "/freqtrade/workspace/BitcoinMLStrategy"
+      ]
+
+  tm3multiclass:
+    build:
+      context: .
+      dockerfile: Dockerfile.tm3
+    image: my-strategies-freqtrade-tm3:latest
+    container_name: freqtrade-tm3multiclass
+    <<: *freqtrade-service
+    environment:
+      - PYTHONPATH=/freqtrade/workspace/TM3MultiClass
+      - WANDB_MODE=offline
+    volumes:
+      - ./docker-data/tm3multiclass:/freqtrade/user_data
+      - ./:/freqtrade/workspace:ro
+    command:
+      [
+        "backtesting",
+        "--config",
+        "/freqtrade/workspace/TM3MultiClass/config_freqai.json",
+        "--strategy",
+        "TM3MultiClass",
+        "--strategy-path",
+        "/freqtrade/workspace/TM3MultiClass",
+        "--freqaimodel",
+        "CatboostFeatureSelectedMultiTargetClassifierV1",
+        "--freqaimodel-path",
+        "/freqtrade/workspace/TM3MultiClass/freqaimodels"
       ]

@@ -1,0 +1,64 @@
+{
+  "trading_mode": "futures",
+  "margin_mode": "isolated",
+  "can_short": true,
+  "max_open_trades": 3,
+  "stake_currency": "USDT",
+  "stake_amount": "unlimited",
+  "tradable_balance_ratio": 0.99,
+  "last_stake_amount_ratio": 0.9,
+  "dry_run": true,
+  "initial_state": "running",
+  "dry_run_wallet": 6000,
+  "timeframe": "1h",
+  "strategy": "BitcoinMLStrategy",
+  "exchange": {
+    "name": "binance",
+    "sandbox": false,
+    "key": "",
+    "secret": "",
+    "ccxt_config": {
+      "enableRateLimit": true,
+      "defaultType": "futures"
+    },
+    "ccxt_async_config": {
+      "enableRateLimit": true,
+      "rateLimit": 200
+    },
+    "pair_whitelist": [
+      "BTC/USDT:USDT"
+    ],
+    "pair_blacklist": []
+  },
+  "pairlists": [
+    {
+      "method": "StaticPairList"
+    }
+  ],
+  "entry_pricing": {
+    "price_side": "same",
+    "use_order_book": true,
+    "order_book_top": 1,
+    "check_depth_of_market": {
+      "enabled": false,
+      "bids_to_ask_delta": 1
+    }
+  },
+  "exit_pricing": {
+    "price_side": "same",
+    "use_order_book": true,
+    "order_book_top": 1
+  },
+  "api_server": {
+    "enabled": true,
+    "listen_ip_address": "0.0.0.0",
+    "listen_port": 8080,
+    "verbosity": "error",
+    "enable_openapi": false,
+    "jwt_secret_key": "213123",
+    "ws_token": "1235rw4er",
+    "CORS_origins": [],
+    "username": "freqtrader",
+    "password": "12312"
+  }
+}

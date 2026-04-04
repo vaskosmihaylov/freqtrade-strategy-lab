@@ -6,18 +6,16 @@ import numpy as np
 from pandas import DataFrame
 from freqtrade.strategy import IStrategy, IntParameter
 
-# Add project root to path to find the ml module
+# Add the strategy folder to path so the local support package resolves.
 current_file = os.path.abspath(__file__)
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(current_file)))))
+project_root = os.path.dirname(current_file)
 if project_root not in sys.path:
     sys.path.append(project_root)
 
 # Try imports
 try:
-    from com.willy.binance.ml.bitcoin_trading_model import BitcoinTradingModel
+    from local_ml.bitcoin_trading_model import BitcoinTradingModel
 except ImportError:
-    # If standard import fails, try to just import from ml dir if path allows
-    # But usually sys.path append works
     print("Could not import BitcoinTradingModel. ML features will be disabled.")
     BitcoinTradingModel = None
 
@@ -53,7 +51,7 @@ class BitcoinMLStrategy(IStrategy):
         if BitcoinTradingModel is not None:
             self.model = BitcoinTradingModel()
             # Construct path to model file
-            model_path = os.path.join(project_root, 'com', 'willy', 'binance', 'ml', 'models', 'bitcoin_model_v1.pkl')
+            model_path = os.path.join(project_root, 'local_ml', 'models', 'bitcoin_model_v1.pkl')
             
             if os.path.exists(model_path):
                 print(f"Loading model from {model_path}")
@@ -68,6 +66,9 @@ class BitcoinMLStrategy(IStrategy):
                 self.model = None
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        if 'volume' in dataframe.columns and 'vol' not in dataframe.columns:
+            dataframe['vol'] = dataframe['volume']
+
         if self.model:
             # Calculate features using the model's logic
             # drop_na=False to preserve Freqtrade's dataframe length

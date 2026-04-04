@@ -1,11 +1,22 @@
-# add common folders to path
+# Add the strategy package root so local `lib` imports resolve.
 import sys
 import os
 
-ROOT_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.append(ROOT_DIR)
+PACKAGE_ROOT = os.path.realpath(os.path.dirname(__file__))
+if PACKAGE_ROOT not in sys.path:
+    sys.path.append(PACKAGE_ROOT)
 
-import sdnotify
+try:
+    import sdnotify
+except ImportError:
+    class _NoopNotifier:
+        def notify(self, *args, **kwargs):
+            return True
+
+    class sdnotify:  # type: ignore
+        @staticmethod
+        def SystemdNotifier():
+            return _NoopNotifier()
 from freqtrade.enums.runmode import RunMode
 from typing import Dict, List, Optional
 from lib.ma import MovingAveragesCalculate, MovingAveragesCalculator2
